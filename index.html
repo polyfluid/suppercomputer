@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>suppercomputer</title>
+  <script src="http://use.typekit.com/gkw1kba.js"></script>
+  <script>try{Typekit.load();}catch(e){}</script>
+<style>
+
+*{
+    margin:             0;
+    padding:            0;
+    }
+
+body{
+    margin:             280px auto;
+    width:              680px;
+    font-family:        "domyouji-1","domyouji-2",sans-serif;
+    }
+
+#question{
+    white-space:        nowrap;
+    color:              #FA5B20;
+    font-size:          18px;
+    }
+
+#replies{
+    font-size:          16px;
+    margin:             20px 0;
+    list-style:         none;
+    color:              #A9A9A9;
+    }
+
+  </style>
+</head>
+<body>
+  <blockquote id="question"></blockquote>
+  <ul id="replies"></ul>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+  <script>
+
+var questions = [],
+    replies = []
+
+var mentions_callback = function(data) {
+
+  var results = data.results
+  
+  for( var i = 0; i < results.length; i++ ) {
+
+    if( results[i].from_user == 'polyfluid' ) {
+      questions.push( results[i] )
+    }
+    else {
+      replies.push( results[i] )
+    }
+
+  }
+  
+  var chosen_question = questions[ Math.floor(Math.random() * questions.length) ]
+  
+  $('#question').text( chosen_question.text.replace('#suppercomputer', '') )
+
+  $('<li />').text( replies[0].from_user + ' – ' + replies[0].text.replace('@polyfluid ', '').replace('#suppercomputer', '').replace('&quot;', '').replace('&quot;', '') ).appendTo('#replies')
+
+}  
+
+// var reply_callback = function(data) {
+//   console.log(data)
+// }
+
+
+  </script>
+  <script src="http://search.twitter.com/search.json?count=100&q=%23suppercomputer&callback=mentions_callback"></script>
+</body>
+</html>
