@@ -19,7 +19,6 @@ body{
     }
 
 #question{
-    white-space:        nowrap;
     color:              #FA5B20;
     font-size:          18px;
     }
@@ -40,35 +39,38 @@ body{
   <script>
 
 var questions = [],
-    replies = []
+    replies = [],
+    chosen_question
 
 var mentions_callback = function(data) {
 
   var results = data.results
   
   for( var i = 0; i < results.length; i++ ) {
-
     if( results[i].from_user == 'polyfluid' ) {
       questions.push( results[i] )
-    }
-    else {
+    } else {
       replies.push( results[i] )
     }
-
   }
   
-  var chosen_question = questions[ Math.floor(Math.random() * questions.length) ]
-  
+  chosen_question = questions[ Math.floor(Math.random() * questions.length) ]
   $('#question').text( chosen_question.text.replace('#suppercomputer', '') )
 
-  $('<li />').text( replies[0].from_user + ' – ' + replies[0].text.replace('@polyfluid ', '').replace('#suppercomputer', '').replace('&quot;', '').replace('&quot;', '') ).appendTo('#replies')
+  for( var i = 0; i < replies.length; i++ ) {
+    var reply_query_url = 'http://api.twitter.com/1/statuses/show/'+replies[i].id_str+'.json?include_entities=1&callback=replies_callback'
+    $('<script />').attr('src', reply_query_url).appendTo('head')
+  }
 
 }  
 
-// var reply_callback = function(data) {
-//   console.log(data)
-// }
+var replies_callback = function(data) {
 
+  if( data.in_reply_to_status_id == chosen_question.id ) {
+    $('<li />').text( data.user.screen_name + ' – ' + data.text.replace('@polyfluid ', '').replace('#suppercomputer', '').replace('&quot;', '').replace('&quot;', '') ).appendTo('#replies')
+  }
+
+}
 
   </script>
   <script src="http://search.twitter.com/search.json?count=100&q=%23suppercomputer&callback=mentions_callback"></script>
